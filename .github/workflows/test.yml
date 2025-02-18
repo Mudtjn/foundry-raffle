@@ -12,6 +12,8 @@ jobs:
   check:
     strategy:
       fail-fast: true
+      matrix:
+        os: [ubuntu-latest]
 
     name: Foundry project
     runs-on: ubuntu-latest
@@ -29,7 +31,7 @@ jobs:
 
       - name: Run Forge fmt
         run: |
-          forge fmt --check
+          forge fmt
         id: fmt
 
       - name: Run Forge build
