@@ -3,6 +3,7 @@ pragma solidity ^0.8.19;
 
 import {Script} from "forge-std/Script.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+import {LinkToken} from "test/mocks/LinkToken.sol";
 
 abstract contract CodeConstants {
     uint96 public MOCK_BASE_FEE = 0.25 ether;
@@ -30,6 +31,7 @@ contract HelperConfig is CodeConstants, Script {
         bytes32 gasLane;
         uint256 subId;
         uint32 callbackGasLimit;
+        address link; 
     }
 
     constructor() {
@@ -57,7 +59,8 @@ contract HelperConfig is CodeConstants, Script {
             callbackGasLimit: 2_500_000,
             subId: 66498156362016622606926862000765147562706128745410374599638249857117939832794,
             entranceFee: ENTRANCE_FEE,
-            interval: INTERVAL
+            interval: INTERVAL, 
+            link: 0x514910771AF9Ca656af840dff83E8264EcF986CA
         });
     }
 
@@ -69,6 +72,7 @@ contract HelperConfig is CodeConstants, Script {
         vm.startBroadcast();
         VRFCoordinatorV2_5Mock vrfCoordinatorV2_5Mock =
             new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE_LINK, MOCK_WEI_PER_UINT_LINK);
+        LinkToken linkToken = new LinkToken(); 
         vm.stopBroadcast();
         anvilConfig = NetworkConfig({
             vrfCoordinator: address(vrfCoordinatorV2_5Mock),
@@ -76,7 +80,8 @@ contract HelperConfig is CodeConstants, Script {
             callbackGasLimit: 2_500_000,
             subId: 0,
             entranceFee: ENTRANCE_FEE,
-            interval: INTERVAL
+            interval: INTERVAL, 
+            link: address(linkToken)
         });
     }
 }

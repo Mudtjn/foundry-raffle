@@ -25,10 +25,12 @@ pragma solidity ^0.8.19;
 import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 
+
 contract Raffle is VRFConsumerBaseV2Plus {
     error Raffle__NotEnoughEthToEnterRaffle();
     error Raffle__NotEnoughTimePassed();
     error Raffle__RaffleNotOpen();
+    error Raffle__IndexOutOfBounds();
     error Raffle__TransferFailed();
     error Raffle__UpkeepNotNeeded(uint256 raffleBalance, uint256 rafflePlayers, RaffleState raffleState);
 
@@ -48,7 +50,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     address private s_recentWinner;
     RaffleState private s_raffleState;
     address payable[] private s_players;
-
+    
     event RaffleEntered(address indexed player);
     event WinnerPicked(address indexed winner);
 
@@ -97,6 +99,9 @@ contract Raffle is VRFConsumerBaseV2Plus {
         if (!upkeepNeeded) {
             revert Raffle__UpkeepNotNeeded(address(this).balance, s_players.length, s_raffleState);
         }
+        if(s_raffleState == RaffleState.CALCULATING){
+            revert Raffle__RaffleNotOpen(); 
+        }
         s_raffleState = RaffleState.CALCULATING;
         VRFV2PlusClient.RandomWordsRequest memory request = VRFV2PlusClient.RandomWordsRequest({
             keyHash: i_keyHash,
@@ -130,11 +135,16 @@ contract Raffle is VRFConsumerBaseV2Plus {
     /**
      * View and pure functions
      */
-    function getEntraceFee() external view returns (uint256) {
+    function getEntranceFee() external view returns (uint256) {
         return i_entraceFee;
     }
 
-    function getRaffleState() external view returns(RaffleState){
+    function getRaffleState() external view returns (RaffleState) {
         return s_raffleState;
+    }
+
+    function getPlayer(uint256 index) external view returns (address) {
+        if (index >= s_players.length) revert Raffle__IndexOutOfBounds();
+        return s_players[index];
     }
 }
