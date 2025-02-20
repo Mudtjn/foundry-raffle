@@ -84,4 +84,8 @@ contract HelperConfig is CodeConstants, Script {
             link: address(linkToken)
         });
     }
+
+    function setActiveNetworkConfig(NetworkConfig memory config) public {
+        activeNetworkConfig = config;
+    }
 }

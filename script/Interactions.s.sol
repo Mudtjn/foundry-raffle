@@ -36,7 +36,6 @@ contract CreateSubscription is Script{
 contract FundSubscription is CodeConstants, Script {
 
     error FundSubscription__InvalidChainId(); 
-    uint256 public constant FUND_AMOUNT = 0.1 ether;
 
     function fundSubscriptionUsingConfig() public {
         HelperConfig helperConfig = new HelperConfig();
@@ -62,11 +61,11 @@ contract FundSubscription is CodeConstants, Script {
             console.log(LinkToken(linkToken).balanceOf(address(this)));
             console.log(address(this));
             vm.startBroadcast();
-            LinkToken(linkToken).transferAndCall(vrfCoordinator, FUND_AMOUNT, abi.encode(subscriptionId));
+            LinkToken(linkToken).transferAndCall(vrfCoordinator, ENTRANCE_FEE*1000, abi.encode(subscriptionId));
             vm.stopBroadcast();
         } else if(block.chainid == ETH_ANVIL_CHAIN_ID){
             vm.startBroadcast();
-            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subscriptionId, FUND_AMOUNT); 
+            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subscriptionId, ENTRANCE_FEE*1000); 
             vm.stopBroadcast(); 
         } else {
             revert FundSubscription__InvalidChainId(); 

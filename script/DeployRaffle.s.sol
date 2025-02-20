@@ -33,11 +33,11 @@ contract DeployRaffle is Script {
 
         AddConsumer addConsumer = new AddConsumer(); 
         addConsumer.addConsumer(address(raffle), config.vrfCoordinator, config.subId);
-
+        helperConfig.setActiveNetworkConfig(config);
         return (raffle, helperConfig);
     }
 
-    function run() public returns (Raffle, HelperConfig) {
+    function run() public returns (Raffle, HelperConfig) { 
         return deployRaffle();
     }
 }
